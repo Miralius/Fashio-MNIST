@@ -28,6 +28,7 @@ endif()
 
 add_library(fashion_mnist_lib
         src/csv_reader.cpp
+        src/tensorflow_classifier.cpp
 )
 target_include_directories(fashion_mnist_lib
         PUBLIC include

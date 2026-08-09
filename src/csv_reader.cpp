@@ -1,4 +1,4 @@
-#include <fashion_mnist/csv_reader.hpp>
+#include <../include/csv_reader.hpp>
 
 #include <array>
 #include <charconv>
@@ -11,7 +11,7 @@
 namespace fashion_mnist {
     namespace {
         struct Sample {
-            int label;
+            unsigned int label;
             std::array<float, kPixelCount> pixels;
         };
 
@@ -70,7 +70,7 @@ namespace fashion_mnist {
                             std::to_string(line_number)
                         };
                     }
-                    sample.label = static_cast<int>(value_result.value());
+                    sample.label = value_result.value();
                 } else {
                     if (value_result.value() > 255) {
                         throw std::runtime_error{

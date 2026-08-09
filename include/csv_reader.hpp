@@ -37,7 +37,7 @@ inline constexpr std::size_t kClassCount = 10;
  */
 struct Batch {
     /** @brief Эталонные метки классов изображений. */
-    std::vector<int> labels;
+    std::vector<unsigned int> labels;
 
     /**
      * @brief Нормализованные пиксели изображений.

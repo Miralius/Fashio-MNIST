@@ -1,4 +1,5 @@
-#include <fashion_mnist/csv_reader.hpp>
+#include <csv_reader.hpp>
+#include <tensorflow_classifier.hpp>
 
 #include <exception>
 #include <fstream>
@@ -11,19 +12,20 @@ namespace {
 
 constexpr std::size_t kBatchSize = 256;
 
-int run(const char* dataset_path, [[maybe_unused]]const char* model_path) {
+int run(const char* dataset_path, const char* model_path) {
     std::ifstream dataset{dataset_path};
     if (!dataset.is_open()) {
         throw std::runtime_error{std::string{"Unable to open test data file: "} + dataset_path};
     }
 
     fashion_mnist::CsvReader reader{dataset};
+    fashion_mnist::TensorFlowClassifier classifier{model_path};
 
     std::size_t correct = 0;
     std::size_t total = 0;
 
     while (auto batch = reader.read_batch(kBatchSize)) {
-        const auto predictions = std::vector<float>(); //classifier.predict_batch(batch->pixels);
+        const auto predictions = classifier.predict_batch(batch->pixels);
         for (std::size_t index = 0; index < predictions.size(); ++index) {
             correct += predictions[index] == batch->labels[index] ? 1U : 0U;
         }
