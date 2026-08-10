@@ -1,0 +1,3 @@
+<map id="fashion_mnist::TensorFlowClassifier" name="fashion_mnist::TensorFlowClassifier">
+<area shape="rect" id="Node000001" title="Классификатор изображений Fashion&#45;MNIST на основе TensorFlow SavedModel." alt="" coords="5,5,189,229"/>
+</map>

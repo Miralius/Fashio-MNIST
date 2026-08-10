@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['labels_0',['labels',['../structfashion__mnist_1_1Batch.html#a1148547d8d98a6498114facd945ef466',1,'fashion_mnist::Batch']]],
+  ['line_5fnumber_1',['line_number',['../classfashion__mnist_1_1CsvReader.html#ad8ba9251c72b71ebb8eacbccdbfa040f',1,'fashion_mnist::CsvReader']]]
+];

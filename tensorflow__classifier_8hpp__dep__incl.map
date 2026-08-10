@@ -1,0 +1,9 @@
+<map id="include/tensorflow_classifier.hpp" name="include/tensorflow_classifier.hpp">
+<area shape="rect" id="Node000001" title="Классификация изображений Fashion&#45;MNIST с помощью TensorFlow SavedModel." alt="" coords="142,5,283,50"/>
+<area shape="rect" id="Node000002" href="$main_8cpp.html" title=" " alt="" coords="5,98,87,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,60,74,100,72,95,153,55"/>
+<area shape="rect" id="Node000003" href="$tensorflow__classifier_8cpp.html" title=" " alt="" coords="111,98,314,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="215,64,215,99,210,96,211,68"/>
+<area shape="rect" id="Node000004" href="$tests_2main_8cpp.html" title=" " alt="" coords="338,98,455,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="276,54,370,97,365,98,275,59"/>
+</map>

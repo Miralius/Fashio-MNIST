@@ -1,0 +1,3 @@
+<map id="fashion_mnist::CsvReader" name="fashion_mnist::CsvReader">
+<area shape="rect" id="Node000001" title="Потоковый читатель размеченного набора Fashion&#45;MNIST в формате CSV." alt="" coords="5,5,186,122"/>
+</map>
