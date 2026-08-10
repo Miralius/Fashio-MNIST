@@ -16,6 +16,12 @@ jobs:
         with:
           submodules: true
       - run: sudo apt-get update && sudo apt-get install libboost-dev libgtest-dev -y
+      - name: Install TensorFlow C API
+        run: |
+          curl --fail --location --retry 3 \
+            "https://storage.googleapis.com/tensorflow/versions/2.18.0/libtensorflow-cpu-linux-x86_64.tar.gz" \
+            | sudo tar --extract --gzip --directory /usr/local
+          sudo ldconfig /usr/local/lib
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTING=ON
       - run: cmake --build . --target unit_tests
       - run: ./unit_tests
@@ -32,6 +38,12 @@ jobs:
       # The release package does not need unit-test dependencies.  GTest is
       # installed only in the `test` job above.
       - run: sudo apt-get update && sudo apt-get install libboost-dev -y
+      - name: Install TensorFlow C API
+        run: |
+          curl --fail --location --retry 3 \
+            "https://storage.googleapis.com/tensorflow/versions/2.18.0/libtensorflow-cpu-linux-x86_64.tar.gz" \
+            | sudo tar --extract --gzip --directory /usr/local
+          sudo ldconfig /usr/local/lib
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTING=OFF
       - run: cmake --build . --target fashio_mnist
       - run: cmake --build . --target package
