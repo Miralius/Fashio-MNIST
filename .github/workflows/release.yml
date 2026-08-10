@@ -1,0 +1,113 @@
+name: 'C++ CI'
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!gh-pages'
+
+jobs:
+  test:
+    runs-on: ubuntu-26.04
+    env:
+      CXX: g++-15
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: sudo apt-get update && sudo apt-get install libboost-dev libgtest-dev -y
+      - name: Install TensorFlow C API
+        run: |
+          curl --fail --location --retry 3 \
+            "https://storage.googleapis.com/tensorflow/versions/2.18.0/libtensorflow-cpu-linux-x86_64.tar.gz" \
+            | sudo tar --extract --gzip --directory /usr/local
+          sudo ldconfig /usr/local/lib
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTING=ON
+      - run: cmake --build . --target unit_tests
+      - run: ./unit_tests
+
+  build:
+    needs: test
+    runs-on: ubuntu-26.04
+    env:
+      CXX: g++-15
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      # The release package does not need unit-test dependencies.  GTest is
+      # installed only in the `test` job above.
+      - run: sudo apt-get update && sudo apt-get install libboost-dev -y
+      - name: Install TensorFlow C API
+        run: |
+          curl --fail --location --retry 3 \
+            "https://storage.googleapis.com/tensorflow/versions/2.18.0/libtensorflow-cpu-linux-x86_64.tar.gz" \
+            | sudo tar --extract --gzip --directory /usr/local
+          sudo ldconfig /usr/local/lib
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTING=OFF
+      - run: cmake --build . --target fashio_mnist
+      - run: cmake --build . --target package
+      - name: Set release metadata
+        id: release_metadata
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+            tag="$GITHUB_RUN_NUMBER"
+            name="Release $GITHUB_RUN_NUMBER"
+            prerelease=false
+          else
+            branch="${GITHUB_REF_NAME//\//-}"
+            tag="prerelease-${branch}-${GITHUB_RUN_NUMBER}"
+            name="Prerelease ${GITHUB_REF_NAME} ${GITHUB_RUN_NUMBER}"
+            prerelease=true
+          fi
+
+          {
+            echo "tag=$tag"
+            echo "name=$name"
+            echo "prerelease=$prerelease"
+          } >> "$GITHUB_OUTPUT"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.release_metadata.outputs.tag }}
+          release_name: ${{ steps.release_metadata.outputs.name }}
+          draft: ${{ steps.release_metadata.outputs.prerelease }}
+          prerelease: ${{ steps.release_metadata.outputs.prerelease }}
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./fashio_mnist-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: fashio_mnist-0.0.${{ github.run_number }}-Linux.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+  documentation:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: sudo apt-get update && sudo apt-get install doxygen graphviz -y
+      - run: doxygen Doxyfile
+      - run: touch docs/html/.nojekyll
+      - name: Publish documentation
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./docs/html
+          force_orphan: true
