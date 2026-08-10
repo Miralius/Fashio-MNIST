@@ -5,7 +5,6 @@
 #include <tensorflow/c/c_api.h>
 
 #include <algorithm>
-#include <cstring>
 #include <memory>
 #include <stdexcept>
 #include <string>
